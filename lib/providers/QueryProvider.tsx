@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useState, type ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useState, type ReactNode } from 'react';
 
 /**
  * TanStack Query provider component for managing server state.
@@ -17,7 +17,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
         defaultOptions: {
           queries: {
             // Prevent refetching on window focus in development for better DX
-            refetchOnWindowFocus: process.env.NODE_ENV === "production",
+            refetchOnWindowFocus: process.env.NODE_ENV === 'production',
             // Keep data fresh for 5 minutes before marking as stale
             staleTime: 5 * 60 * 1000,
             // Cache data for 10 minutes

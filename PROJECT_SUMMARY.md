@@ -203,13 +203,13 @@ export function AddToCartButton({ product }) {
 
 ```typescript
 // Server Action
-"use server";
-import { stripe } from "@/lib/stripe/server";
+'use server';
+import { stripe } from '@/lib/stripe/server';
 
 export async function createPaymentIntent(amount: number) {
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.floor(amount * 100), // Convert to cents
-    currency: "usd",
+    currency: 'usd',
   });
   return paymentIntent.client_secret;
 }
@@ -283,25 +283,21 @@ export async function createPaymentIntent(amount: number) {
 ## 🎓 Best Practices Applied
 
 1. **Clean Code**
-
    - Self-documenting names
    - Single responsibility functions
    - Minimal nesting with early returns
 
 2. **Type Safety**
-
    - TypeScript strict mode
    - Zod runtime validation
    - Database type definitions
 
 3. **Performance**
-
    - Server Components by default
    - Optimized image loading
    - Intelligent data caching
 
 4. **Security**
-
    - Environment variables for secrets
    - RLS policies on database
    - Webhook signature verification

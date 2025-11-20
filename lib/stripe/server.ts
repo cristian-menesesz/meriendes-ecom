@@ -1,4 +1,4 @@
-import Stripe from "stripe";
+import Stripe from 'stripe';
 
 /**
  * Stripe server-side client initialization.
@@ -7,10 +7,10 @@ import Stripe from "stripe";
  * Docs: https://docs.stripe.com/api
  */
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-11-17.clover",
+  apiVersion: '2025-11-17.clover',
   typescript: true,
   appInfo: {
-    name: "Meriendes E-commerce",
-    version: "0.1.0",
+    name: 'Meriendes E-commerce',
+    version: '0.1.0',
   },
 });

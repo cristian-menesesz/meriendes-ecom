@@ -218,16 +218,14 @@ This project follows strict code conventions to ensure maintainability and reada
  * @param {string} productId - The UUID of the product to fetch.
  * @returns {Promise<Product | null>} The product object or null if not found/inactive.
  */
-export async function getActiveProduct(
-  productId: string
-): Promise<Product | null> {
+export async function getActiveProduct(productId: string): Promise<Product | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", productId)
-    .eq("is_active", true)
+    .from('products')
+    .select('*')
+    .eq('id', productId)
+    .eq('is_active', true)
     .single();
 
   if (error) throw new Error(`Failed to fetch product: ${error.message}`);
