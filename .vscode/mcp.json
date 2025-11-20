@@ -3,6 +3,10 @@
 		"supabase-mcp": {
 			"url": "https://mcp.supabase.com/mcp",
 			"type": "http"
+		},
+		"stripe-mcp": {
+			"url": "https://mcp.stripe.com",
+			"type": "http"
 		}
 	},
 	"inputs": []
