@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -9,10 +9,7 @@ export default function Home() {
             Meriendes
           </Link>
           <nav className="flex gap-6">
-            <Link
-              href="/products"
-              className="text-sm font-medium hover:underline"
-            >
+            <Link href="/products" className="text-sm font-medium hover:underline">
               Products
             </Link>
             <Link href="/cart" className="text-sm font-medium hover:underline">
@@ -28,9 +25,8 @@ export default function Home() {
             Welcome to Meriendes E-commerce
           </h1>
           <p className="mb-8 text-lg text-gray-600">
-            A modern, full-stack e-commerce platform built with Next.js,
-            Supabase, and Stripe. Browse our products and enjoy a seamless
-            shopping experience.
+            A modern, full-stack e-commerce platform built with Next.js, Supabase, and Stripe.
+            Browse our products and enjoy a seamless shopping experience.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Link
@@ -52,15 +48,13 @@ export default function Home() {
           <div className="rounded-lg border p-6">
             <h3 className="mb-2 font-semibold">Next.js 16</h3>
             <p className="text-sm text-gray-600">
-              Built with the latest App Router, Server Components, and Server
-              Actions
+              Built with the latest App Router, Server Components, and Server Actions
             </p>
           </div>
           <div className="rounded-lg border p-6">
             <h3 className="mb-2 font-semibold">Supabase</h3>
             <p className="text-sm text-gray-600">
-              PostgreSQL database with authentication and real-time
-              subscriptions
+              PostgreSQL database with authentication and real-time subscriptions
             </p>
           </div>
           <div className="rounded-lg border p-6">

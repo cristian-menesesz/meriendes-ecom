@@ -67,12 +67,7 @@ export interface OrderItem {
 /**
  * Possible order statuses throughout the order lifecycle.
  */
-export type OrderStatus =
-  | "pending"
-  | "processing"
-  | "completed"
-  | "cancelled"
-  | "refunded";
+export type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled' | 'refunded';
 
 /**
  * User profile information.
@@ -103,23 +98,23 @@ export interface Database {
     Tables: {
       products: {
         Row: Product;
-        Insert: Omit<Product, "id" | "createdAt" | "updatedAt">;
-        Update: Partial<Omit<Product, "id" | "createdAt" | "updatedAt">>;
+        Insert: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>;
+        Update: Partial<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>;
       };
       orders: {
         Row: Order;
-        Insert: Omit<Order, "id" | "createdAt" | "updatedAt">;
-        Update: Partial<Omit<Order, "id" | "createdAt" | "updatedAt">>;
+        Insert: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>;
+        Update: Partial<Omit<Order, 'id' | 'createdAt' | 'updatedAt'>>;
       };
       order_items: {
         Row: OrderItem;
-        Insert: Omit<OrderItem, "id" | "createdAt">;
-        Update: Partial<Omit<OrderItem, "id" | "createdAt">>;
+        Insert: Omit<OrderItem, 'id' | 'createdAt'>;
+        Update: Partial<Omit<OrderItem, 'id' | 'createdAt'>>;
       };
       profiles: {
         Row: UserProfile;
-        Insert: Omit<UserProfile, "createdAt" | "updatedAt">;
-        Update: Partial<Omit<UserProfile, "id" | "createdAt" | "updatedAt">>;
+        Insert: Omit<UserProfile, 'createdAt' | 'updatedAt'>;
+        Update: Partial<Omit<UserProfile, 'id' | 'createdAt' | 'updatedAt'>>;
       };
     };
   };

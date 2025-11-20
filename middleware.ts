@@ -1,5 +1,5 @@
-import { type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/middleware";
+import { type NextRequest } from 'next/server';
+import { createClient } from '@/lib/supabase/middleware';
 
 /**
  * Middleware for handling Supabase authentication and session management.
@@ -25,6 +25,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

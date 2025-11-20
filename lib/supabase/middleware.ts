@@ -1,7 +1,7 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import type { Database } from "@/types";
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import type { Database } from '@/types';
 
 /**
  * Creates a Supabase client for Middleware.
@@ -27,9 +27,7 @@ export function createClient(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({
             request,
           });

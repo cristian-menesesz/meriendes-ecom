@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import type { CartItem, Product } from "@/types";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { CartItem, Product } from '@/types';
 
 interface CartStore {
   items: CartItem[];
@@ -25,9 +25,7 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (product, quantity = 1) => {
         set((state) => {
-          const existingItem = state.items.find(
-            (item) => item.product.id === product.id
-          );
+          const existingItem = state.items.find((item) => item.product.id === product.id);
 
           if (existingItem) {
             return {
@@ -73,14 +71,11 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTotalPrice: () => {
-        return get().items.reduce(
-          (total, item) => total + item.product.price * item.quantity,
-          0
-        );
+        return get().items.reduce((total, item) => total + item.product.price * item.quantity, 0);
       },
     }),
     {
-      name: "cart-storage",
+      name: 'cart-storage',
       // Persist to localStorage
       skipHydration: false,
     }

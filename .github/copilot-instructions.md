@@ -145,3 +145,193 @@ The application must be intuitive and accessible.
 - Implement basic console logging for key events: new user registration, order completion, and errors.
 - Structure logs to be easily parsed later.
 - (For future) Plan for integration with tools like Vercel Analytics or a proper logging service.
+
+# 1. Code Conventions & Clean Code Principles
+
+## Self-Documenting Code as the Default:
+
+**Names are paramount.** Variables, functions, and components must have intention-revealing names.
+
+- **BAD**: `const x = await sb.from('p').select('*').eq('id', pid);`
+- **GOOD**: `const product = await supabase.from('products').select('*').eq('id', productId).single();`
+
+Functions should be small and do one thing. If a function's purpose cannot be described in a simple name, it must be broken down.
+
+- **BAD**: A large `handleCheckout` function that validates the cart, creates a Stripe Payment Intent, and updates the inventory.
+- **GOOD**: `validateCart`, `createStripePaymentIntent`, `reserveInventory`. Compose these in the main `handleCheckout` function.
+
+Avoid deep nesting. Use early returns and guard clauses to flatten if statements. This enhances readability.
+
+## Commenting Strategy: "Why," not "What":
+
+**DO NOT COMMENT OBVIOUS CODE.** The code itself should explain what it is doing.
+
+- **BAD**: `// Increment i by 1 \n i++;`
+
+**COMMENT THE "WHY."** Explain the reasoning behind a non-obvious implementation, especially when it involves business logic or third-party service quirks.
+
+- **GOOD**:
+
+```javascript
+// Stripe requires the amount in cents, hence multiplying by 100.
+// Using Math.floor to avoid floating point precision issues.
+const amountInCents = Math.floor(productPrice * 100);
+```
+
+**COMMENT COMPLEX ALGORITHMS OR WORKAROUNDS.** If you implemented a complex discount calculation or a workaround for a Supabase edge case, document the logic briefly.
+
+## Third-Party Service Integration Comments:
+
+When initializing a client (Supabase, Stripe), add a brief comment with a link to the official docs.
+
+```javascript
+// Supabase Client initialization
+// Docs: https://supabase.com/docs/reference/javascript/initializing
+export const createClient = () => { ... }
+```
+
+For API calls, comment on the purpose of the call in the context of our application.
+
+```javascript
+// Using Stripe's `expand` to get the latest charge details in a single API call
+// for immediate post-payment UI update, avoiding a separate webhook wait.
+const paymentIntent = await stripe.paymentIntents.retrieve(pi_id, {
+  expand: ['latest_charge'],
+});
+```
+
+## TypeScript is Documentation:
+
+Leverage TypeScript interfaces and types as a primary form of documentation.
+
+- **BAD**: `const product = { ... } // product object`
+- **GOOD**:
+
+```typescript
+  interface Product {
+    id: string;
+    name: string;
+    price: number; // Stored in dollars, displayed to user.
+    stripePriceId: string; // The corresponding Price ID in Stripe.
+    inventoryCount: number;
+  }
+  const product: Product = { ... };
+```
+
+The interface is its own documentation.
+
+# 2. Documentation Strategy (In-Line & MD Files)
+
+## Project-Wide Overview (/docs/OVERVIEW.md):
+
+Create a single, brief OVERVIEW.md file in a /docs directory.
+
+**Content:**
+
+- 1-2 paragraphs on the project's purpose.
+- A bulleted list of the core tech stack (Next.js, Supabase, Stripe).
+- A high-level diagram or description of the data flow (User -> Next.js -> Supabase/Stripe).
+
+## Feature-Level Documentation (/app/feature/README.md):
+
+For each major feature directory (e.g., /app/cart, /app/checkout, /app/admin), include a README.md file. This file must be concise.
+
+**Its structure:**
+
+- **Purpose**: One sentence describing the feature.
+- **Key Components**: A bulleted list of the main components/files in the folder and their one-sentence roles.
+- **Data Flow**: A brief description of how data moves through this feature.
+
+**Example for /app/checkout/README.md:**
+
+- page.tsx uses Server Actions to create a Stripe Payment Intent.
+- `<CheckoutForm />` uses Stripe Elements to collect payment details.
+- On submission, `handlePaymentSubmission` calls a Server Action.
+- The Server Action confirms the payment with Stripe and, on success, inserts an order into Supabase.
+
+## Component-Level Documentation (JSDoc):
+
+Use JSDoc comments for all React components and non-trivial utility functions. This keeps documentation close to the code and is easily consumed by IDEs.
+
+**Example for a Component:**
+
+```typescript
+/**
+ * Displays a single product card with image, name, price, and add-to-cart action.
+ * Optimized for SEO and LCP by using next/image with priority loading.
+ *
+ * @param {Product} product - The product object to display.
+ * @param {function} onAddToCart - Callback function invoked when the add-to-cart button is clicked.
+ */
+export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  ...
+}
+```
+
+**Example for a Service Function:**
+
+```typescript
+/**
+ * Fetches an active product by its ID from Supabase.
+ * Enforces RLS policies; will only return products where `is_active` is true.
+ *
+ * @param {string} productId - The UUID of the product to fetch.
+ * @returns {Promise<Product | null>} The product object or null if not found/inactive.
+ * @throws {Error} If the Supabase query fails for any reason.
+ */
+export async function getActiveProduct(productId: string): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', productId)
+    .eq('is_active', true)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to fetch product ${productId}: ${error.message}`);
+  }
+
+  return data;
+}
+```
+
+# 3. File & Folder Structure Conventions
+
+## Group by Feature, not by Type:
+
+The app/ directory should be structured around features, not technical roles.
+
+**AVOID:**
+
+```text
+app/
+  components/
+    Button.tsx
+    ProductCard.tsx
+    CheckoutForm.tsx
+  lib/
+```
+
+**PREFER:**
+
+```text
+app/
+  (shop)/
+    products/
+      [id]/
+        page.tsx
+        ProductCard.tsx
+        README.md  # Explains the product display feature.
+    layout.tsx
+  checkout/
+    page.tsx
+    CheckoutForm.tsx
+    actions.ts  # Server Actions for checkout
+    README.md  # Explains the checkout flow.
+  lib/  # For truly shared, generic utilities.
+```
+
+## Naming Consistency:
+
+- **Files**: Use PascalCase for components (ProductCard.tsx), camelCase for utilities and hooks (formatCurrency.ts, useCart.ts).
+- **Folders**: Use kebab-case for route folders ([product-id]) and camelCase or PascalCase for feature folders.
