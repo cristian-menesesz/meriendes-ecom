@@ -47,10 +47,10 @@ Use this checklist to track your progress as you build out the e-commerce platfo
 
 ### Products Feature
 
-- [ ] Create product listing page (`app/(shop)/products/page.tsx`)
-- [ ] Implement product fetching from Supabase
-- [ ] Create ProductCard component
-- [ ] Add product filtering/sorting
+- [x] Create product listing page (`app/(shop)/products/page.tsx`)
+- [x] Implement product fetching from Supabase
+- [x] Create ProductCard component
+- [x] Add product filtering/sorting
 - [ ] Create product detail page (`app/(shop)/products/[id]/page.tsx`)
 - [ ] Implement product image optimization
 - [ ] Add SEO metadata for products
