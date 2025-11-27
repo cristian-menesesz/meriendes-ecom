@@ -1,3 +1,5 @@
+Separation of Concerns for Next.js Components: Strictly enforce a clear separation between presentation and business logic across all components. Implement a consistent pattern where UI components remain purely presentational—receiving all data and callbacks via props—while business logic, data fetching, and state management are abstracted into custom hooks, server components, and service functions. This ensures components are focused solely on rendering, making them more testable, reusable, and maintainable. For example, a ProductCard should not contain direct Supabase queries or complex cart manipulation logic; instead, it should receive product data and an onAddToCart callback from a parent component or hook that handles the underlying business operations.
+
 # 1. Security (!)
 
 Security is the highest priority. An e-commerce platform handles sensitive user data and financial transactions. All code must adhere to the following principles.
