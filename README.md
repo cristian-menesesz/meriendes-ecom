@@ -1,5 +1,7 @@
 # Meriendes E-commerce Platform
 
+![CI](https://github.com/cristian-menesesz/meriendes-ecom/actions/workflows/ci.yml/badge.svg)
+
 A modern, full-stack e-commerce platform built with Next.js 16, featuring secure payment processing via Stripe, real-time data management with Supabase, and a polished user experience.
 
 ## 🚀 Tech Stack
@@ -244,6 +246,15 @@ npm run start        # Start production server
 
 # Code Quality
 npm run lint         # Run ESLint
+npm run lint:fix     # Fix auto-fixable ESLint errors
+npm run type-check   # Run TypeScript type checking
+npm run format       # Format code with Prettier
+npm run format:check # Check code formatting
+
+# Testing
+npm run test         # Run Jest tests
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
 ```
 
 ## 🔐 Environment Variables
