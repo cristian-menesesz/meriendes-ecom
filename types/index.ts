@@ -459,6 +459,7 @@ export interface Payment {
   failureMessage: string | null;
 
   // Metadata
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: Record<string, any> | null;
 }
 
@@ -523,7 +524,9 @@ export interface AuditLog {
   tableName: string;
   recordId: string;
   action: 'INSERT' | 'UPDATE' | 'DELETE';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   oldValues: Record<string, any> | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   newValues: Record<string, any> | null;
   changedBy: string | null;
   changedAt: string;

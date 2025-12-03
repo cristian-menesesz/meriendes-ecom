@@ -5,7 +5,7 @@ import type { ProductWithDetails } from '@/lib/supabase/queries/products';
 
 // Mock the ProductCard component
 jest.mock('@/components/products/ProductCard', () => ({
-  ProductCard: ({ product }: any) => (
+  ProductCard: ({ product }: { product: ProductWithDetails }) => (
     <div data-testid={`product-card-${product.id}`}>{product.name}</div>
   ),
 }));
@@ -100,17 +100,17 @@ describe('ProductGrid Component', () => {
     });
 
     it('should not render grid when products array is empty', () => {
-      const { container } = render(<ProductGrid products={[]} />);
+      render(<ProductGrid products={[]} />);
 
       // Grid should not exist
-      const grid = container.querySelector('.grid');
+      const grid = document.querySelector('.grid');
       expect(grid).not.toBeInTheDocument();
     });
 
     it('should show centered empty state', () => {
-      const { container } = render(<ProductGrid products={[]} />);
+      render(<ProductGrid products={[]} />);
 
-      const emptyState = container.querySelector('.flex.flex-col.items-center');
+      const emptyState = document.querySelector('.flex.flex-col.items-center');
       expect(emptyState).toBeInTheDocument();
     });
   });
@@ -166,7 +166,7 @@ describe('ProductGrid Component', () => {
         createMockProduct('unique-2', 'Product 2'),
       ];
 
-      const { container } = render(<ProductGrid products={products} />);
+      render(<ProductGrid products={products} />);
 
       // React keys are not directly accessible, but we can verify unique testids
       expect(screen.getByTestId('product-card-unique-1')).toBeInTheDocument();

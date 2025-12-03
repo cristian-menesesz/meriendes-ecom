@@ -1,8 +1,14 @@
 import React from 'react';
+import type { LinkProps } from 'next/link';
 
-export default function MockLink({ children, href, className, ...props }: any) {
+type MockLinkProps = Partial<LinkProps> & {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+export default function MockLink({ children, href, className, ...props }: MockLinkProps) {
   return (
-    <a href={href} className={className} {...props}>
+    <a href={href?.toString()} className={className} {...props}>
       {children}
     </a>
   );
