@@ -103,7 +103,7 @@ export async function getProductsByCategory(categorySlug: string): Promise<Produ
     .select('id')
     .eq('slug', categorySlug)
     .eq('is_active', true)
-    .single();
+    .single<{ id: number }>();
 
   if (categoryError || !category) {
     return [];
