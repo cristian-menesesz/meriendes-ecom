@@ -43,7 +43,7 @@ export async function getActiveProducts(): Promise<ProductWithDetails[]> {
   }
 
   // Map snake_case from Supabase to our camelCase types
-  const mapped: ProductWithDetails[] = (data || []).map((p: any) => mapProductRow(p));
+  const mapped: ProductWithDetails[] = (data || []).map((p) => mapProductRow(p));
 
   // Filter products that have at least one active variant (after mapping)
   const productsWithActiveVariants = mapped.filter((product) =>
@@ -84,7 +84,7 @@ export async function getFeaturedProducts(limit: number = 6): Promise<ProductWit
   if (error) {
     throw new Error(`Failed to fetch featured products: ${error.message}`);
   }
-  return (data || []).map((p: any) => mapProductRow(p)) as ProductWithDetails[];
+  return (data || []).map((p) => mapProductRow(p));
 }
 
 /**
@@ -103,7 +103,7 @@ export async function getProductsByCategory(categorySlug: string): Promise<Produ
     .select('id')
     .eq('slug', categorySlug)
     .eq('is_active', true)
-    .single();
+    .single<{ id: number }>();
 
   if (categoryError || !category) {
     return [];
@@ -122,13 +122,13 @@ export async function getProductsByCategory(categorySlug: string): Promise<Produ
     `
     )
     .eq('is_active', true)
-    .eq('category_id', (category as any).id)
+    .eq('category_id', category.id)
     .order('display_order', { ascending: true });
 
   if (error) {
     throw new Error(`Failed to fetch products by category: ${error.message}`);
   }
-  return (data || []).map((p: any) => mapProductRow(p)) as ProductWithDetails[];
+  return (data || []).map((p) => mapProductRow(p));
 }
 
 /**
@@ -182,10 +182,11 @@ export async function searchProducts(searchQuery: string): Promise<ProductWithDe
   if (error) {
     throw new Error(`Failed to search products: ${error.message}`);
   }
-  return (data || []).map((p: any) => mapProductRow(p)) as ProductWithDetails[];
+  return (data || []).map((p) => mapProductRow(p));
 }
 
 // --- Mapping helpers: convert Supabase snake_case rows to our camelCase types ---
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapProductRow(p: any): ProductWithDetails {
   return {
     id: p.id,
@@ -215,7 +216,8 @@ function mapProductRow(p: any): ProductWithDetails {
       : null,
     // variants with inventory
     variants: Array.isArray(p.variants)
-      ? p.variants.map((v: any) => ({
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        p.variants.map((v: any) => ({
           id: v.id,
           productId: v.product_id,
           sku: v.sku,

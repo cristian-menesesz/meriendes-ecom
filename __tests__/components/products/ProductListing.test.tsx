@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ProductListing } from '@/components/products/ProductListing';
 import { useCartStore } from '@/store/cartStore';
 import type { ProductWithDetails } from '@/lib/supabase/queries/products';
-import type { Product, ProductVariant } from '@/types';
 
 // Mock dependencies
 jest.mock('@/store/cartStore');
@@ -15,7 +14,13 @@ jest.mock('sonner', () => ({
 }));
 
 jest.mock('@/components/products/ProductGrid', () => ({
-  ProductGrid: ({ products, onAddToCart }: any) => (
+  ProductGrid: ({
+    products,
+    onAddToCart,
+  }: {
+    products: ProductWithDetails[];
+    onAddToCart?: (product: ProductWithDetails, variant: ProductWithDetails['variants'][0]) => void;
+  }) => (
     <div data-testid="product-grid">
       {products.map((product: ProductWithDetails) => (
         <div key={product.id} data-testid={`grid-product-${product.id}`}>
@@ -148,8 +153,8 @@ describe('ProductListing Component', () => {
       );
     });
 
-    it('should show success toast when item is added to cart', () => {
-      const { toast } = require('sonner');
+    it('should show success toast when item is added to cart', async () => {
+      const sonner = await import('sonner');
       const products = [createMockProduct('1', 'Vanilla Cupcake')];
 
       render(<ProductListing products={products} />);
@@ -157,11 +162,11 @@ describe('ProductListing Component', () => {
       const addButton = screen.getByTestId('add-button-1');
       fireEvent.click(addButton);
 
-      expect(toast.success).toHaveBeenCalledWith('Added Vanilla Cupcake (Standard) to cart');
+      expect(sonner.toast.success).toHaveBeenCalledWith('Added Vanilla Cupcake (Standard) to cart');
     });
 
-    it('should include variant name in success message', () => {
-      const { toast } = require('sonner');
+    it('should include variant name in success message', async () => {
+      const sonner = await import('sonner');
       const products = [createMockProduct('1', 'Product')];
       products[0].variants[0].variantName = 'Large Size';
 
@@ -170,7 +175,7 @@ describe('ProductListing Component', () => {
       const addButton = screen.getByTestId('add-button-1');
       fireEvent.click(addButton);
 
-      expect(toast.success).toHaveBeenCalledWith('Added Product (Large Size) to cart');
+      expect(sonner.toast.success).toHaveBeenCalledWith('Added Product (Large Size) to cart');
     });
 
     it('should always add quantity of 1', () => {

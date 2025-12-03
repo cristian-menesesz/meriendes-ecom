@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main, develop]
 
+# Allow workflow to write comments on PRs
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 # Cancel in-progress runs on same branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

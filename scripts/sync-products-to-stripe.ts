@@ -225,7 +225,7 @@ async function syncProduct(product: ProductWithVariants, result: SyncResult): Pr
       stripeProduct = await stripe.products.retrieve(existingStripeProductId);
       console.log(`  ✓ Product already exists in Stripe: ${stripeProduct.id}`);
       result.productsUpdated++;
-    } catch (error) {
+    } catch {
       // Product doesn't exist in Stripe, create a new one
       console.log(`  ⚠️  Stripe product not found, creating new one...`);
       stripeProduct = await createStripeProduct(product);
@@ -281,7 +281,7 @@ async function syncVariant(
       console.log(`  ✓ Price already exists: ${variant.variant_name} - ${existingPrice.id}`);
       result.pricesUpdated++;
       return;
-    } catch (error) {
+    } catch {
       // Price doesn't exist, create a new one
       console.log(`  ⚠️  Stripe price not found, creating new one...`);
     }

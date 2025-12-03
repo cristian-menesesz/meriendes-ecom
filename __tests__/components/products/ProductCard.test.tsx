@@ -383,7 +383,7 @@ describe('ProductCard Component', () => {
       render(<ProductCard product={product} variants={variants} />);
 
       const image = screen.getByAltText('Test Product');
-      expect(image).toHaveAttribute('priority', 'true');
+      expect(image).toHaveAttribute('data-priority', 'true');
     });
 
     it('should not set priority loading for non-featured products', () => {
@@ -393,7 +393,7 @@ describe('ProductCard Component', () => {
       render(<ProductCard product={product} variants={variants} />);
 
       const image = screen.getByAltText('Test Product');
-      expect(image).not.toHaveAttribute('priority', 'true');
+      expect(image).toHaveAttribute('data-priority', 'false');
     });
   });
 
