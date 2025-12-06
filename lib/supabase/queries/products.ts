@@ -185,6 +185,56 @@ export async function searchProducts(searchQuery: string): Promise<ProductWithDe
   return (data || []).map((p) => mapProductRow(p));
 }
 
+/**
+ * Fetches a single product by its slug with all variants and inventory.
+ * Returns null if product is not found or not active.
+ * Enforces RLS policies for public access.
+ *
+ * @param {string} slug - The URL slug of the product to fetch.
+ * @returns {Promise<ProductWithDetails | null>} The product with variants or null if not found.
+ * @throws {Error} If the Supabase query fails.
+ */
+export async function getProductBySlug(slug: string): Promise<ProductWithDetails | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('products')
+    .select(
+      `
+      *,
+      category:product_categories(*),
+      variants:product_variants(
+        *,
+        inventory(*)
+      )
+    `
+    )
+    .eq('slug', slug)
+    .eq('is_active', true)
+    .single();
+
+  if (error) {
+    // Not found is expected, throw only on actual errors
+    if (error.code === 'PGRST116') {
+      return null;
+    }
+    throw new Error(`Failed to fetch product: ${error.message}`);
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const product = mapProductRow(data);
+
+  // Ensure product has at least one active variant
+  if (!product.variants?.some((v) => v.isActive)) {
+    return null;
+  }
+
+  return product;
+}
+
 // --- Mapping helpers: convert Supabase snake_case rows to our camelCase types ---
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapProductRow(p: any): ProductWithDetails {
