@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui';
+import { Header } from '@/components/layout';
 
 /**
  * Layout for the shop section of the application.
@@ -10,39 +9,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation Header */}
-      <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            {/* Logo/Brand */}
-            <Link href="/" className="text-xl font-bold text-gray-900">
-              Meriendes
-            </Link>
-
-            {/* Navigation Links */}
-            <div className="hidden md:flex md:items-center md:gap-6">
-              <Link
-                href="/products"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
-              >
-                Products
-              </Link>
-              <Link
-                href="/products?category=featured"
-                className="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
-              >
-                Featured
-              </Link>
-            </div>
-
-            {/* Cart Button */}
-            <Link href="/cart">
-              <Button variant="outline" size="sm">
-                Cart
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Main Content */}
       {children}
