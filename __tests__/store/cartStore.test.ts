@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useCartStore } from '@/store/cartStore';
 import type { Product, ProductVariant } from '@/types';
 
@@ -611,9 +611,6 @@ describe('CartStore', () => {
         // Verify isSidebarOpen is not in persisted state
         expect(parsed.state.isSidebarOpen).toBeUndefined();
       }
-
-      // Create new hook instance
-      const { result: secondResult } = renderHook(() => useCartStore());
 
       // In test environment, Zustand keeps state in memory
       // But persistence config ensures isSidebarOpen is not saved to localStorage

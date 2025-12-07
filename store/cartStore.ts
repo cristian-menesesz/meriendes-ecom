@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CartItem, Product, ProductVariant } from '@/types';
 
-interface CartStore {
+export interface CartStore {
   items: CartItem[];
   isSidebarOpen: boolean;
 

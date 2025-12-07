@@ -5,9 +5,11 @@ import { formatCurrency } from '@/lib/utils/currency';
 
 // Mock Next.js Link component
 jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
+  const Link = ({ children, href }: { children: React.ReactNode; href: string }) => {
     return <a href={href}>{children}</a>;
   };
+  Link.displayName = 'Link';
+  return Link;
 });
 
 describe('CartSummary', () => {

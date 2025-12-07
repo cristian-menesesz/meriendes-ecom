@@ -1,8 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { CartButton } from '@/components/cart/CartButton';
-import { useCartStore } from '@/store/cartStore';
-import type { Product, ProductVariant } from '@/types';
+import { useCartStore, type CartStore } from '@/store/cartStore';
 
 // Mock Zustand store
 jest.mock('@/store/cartStore', () => ({
@@ -11,46 +10,12 @@ jest.mock('@/store/cartStore', () => ({
 
 const mockUseCartStore = useCartStore as jest.MockedFunction<typeof useCartStore>;
 
-// Mock data factory
-const createMockProduct = (): Product => ({
-  id: 'prod-1',
-  categoryId: 1,
-  name: 'Test Product',
-  slug: 'test-product',
-  description: 'A test product description',
-  shortDescription: 'Test short description',
-  imageUrl: 'https://example.com/test.jpg',
-  isActive: true,
-  isSeasonal: false,
-  isFeatured: false,
-  displayOrder: 0,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-});
-
-const createMockVariant = (): ProductVariant => ({
-  id: 'var-1',
-  productId: 'prod-1',
-  sku: 'TEST-SKU-1',
-  variantName: 'Small',
-  price: 29.99,
-  compareAtPrice: null,
-  cost: null,
-  weightGrams: null,
-  isActive: true,
-  displayOrder: 0,
-  stripePriceId: null,
-  stripeProductId: null,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-});
-
 describe('CartButton', () => {
   const mockOpenSidebar = jest.fn();
 
   // Helper to setup Zustand store mock with selector pattern
   const setupMockStore = (totalItems: number) => {
-    mockUseCartStore.mockImplementation((selector: any) => {
+    mockUseCartStore.mockImplementation((selector: (state: CartStore) => unknown) => {
       const state = {
         items: [],
         isSidebarOpen: false,

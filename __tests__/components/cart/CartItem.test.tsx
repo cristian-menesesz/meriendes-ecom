@@ -6,14 +6,16 @@ import { formatCurrency } from '@/lib/utils/currency';
 
 // Mock Next.js components
 jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
+  const Link = ({ children, href }: { children: React.ReactNode; href: string }) => {
     return <a href={href}>{children}</a>;
   };
+  Link.displayName = 'Link';
+  return Link;
 });
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
     return <img {...props} />;
   },
@@ -179,10 +181,10 @@ describe('CartItem', () => {
   });
 
   describe('sidebar variant', () => {
-    it('renders compact layout', () => {
+    it('uses smaller image size', () => {
       const item = createMockCartItem();
 
-      const { container } = render(
+      render(
         <CartItem
           item={item}
           onIncrement={mockOnIncrement}
@@ -215,7 +217,7 @@ describe('CartItem', () => {
     it('renders remove button below quantity controls', () => {
       const item = createMockCartItem();
 
-      const { container } = render(
+      render(
         <CartItem
           item={item}
           onIncrement={mockOnIncrement}
@@ -231,10 +233,10 @@ describe('CartItem', () => {
   });
 
   describe('page variant', () => {
-    it('renders detailed layout', () => {
+    it('uses consistent image size with sidebar variant', () => {
       const item = createMockCartItem();
 
-      const { container } = render(
+      render(
         <CartItem
           item={item}
           onIncrement={mockOnIncrement}
@@ -348,7 +350,7 @@ describe('CartItem', () => {
     it('shows trash icon when quantity is 1', () => {
       const item = createMockCartItem(1);
 
-      const { container } = render(
+      render(
         <CartItem
           item={item}
           onIncrement={mockOnIncrement}

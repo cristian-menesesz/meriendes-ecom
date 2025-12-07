@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { CartSidebar } from '@/components/cart/CartSidebar';
-import { useCartStore } from '@/store/cartStore';
-import type { Product, ProductVariant } from '@/types';
+import { useCartStore, type CartStore } from '@/store/cartStore';
+import type { CartItem, Product, ProductVariant } from '@/types';
 
 // Mock Zustand store
 jest.mock('@/store/cartStore', () => ({
@@ -11,35 +11,51 @@ jest.mock('@/store/cartStore', () => ({
 
 // Mock Next.js components
 jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
+  const Link = ({ children, href }: { children: React.ReactNode; href: string }) => {
     return <a href={href}>{children}</a>;
   };
+  Link.displayName = 'Link';
+  return Link;
 });
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
     return <img {...props} />;
   },
 }));
 
 // Mock Headless UI Dialog for testing
+interface DialogProps {
+  children: React.ReactNode;
+  onClose: () => void;
+}
+
+interface TransitionProps {
+  show: boolean;
+  children: React.ReactNode;
+}
+
+interface SimpleProps {
+  children: React.ReactNode;
+}
+
 jest.mock('@headlessui/react', () => ({
-  Dialog: ({ children, onClose }: any) => (
+  Dialog: ({ children, onClose }: DialogProps) => (
     <div data-testid="dialog" role="dialog" onClick={onClose}>
       {children}
     </div>
   ),
-  DialogPanel: ({ children }: any) => <div data-testid="dialog-panel">{children}</div>,
-  DialogTitle: ({ children }: any) => <h2>{children}</h2>,
-  Transition: ({ show, children }: any) => (
+  DialogPanel: ({ children }: SimpleProps) => <div data-testid="dialog-panel">{children}</div>,
+  DialogTitle: ({ children }: SimpleProps) => <h2>{children}</h2>,
+  Transition: ({ show, children }: TransitionProps) => (
     <div data-testid="transition" data-show={show}>
       {show && children}
     </div>
   ),
-  TransitionChild: ({ children }: any) => <div>{children}</div>,
-  Fragment: ({ children }: any) => <>{children}</>,
+  TransitionChild: ({ children }: SimpleProps) => <div>{children}</div>,
+  Fragment: ({ children }: SimpleProps) => <>{children}</>,
 }));
 
 const mockUseCartStore = useCartStore as jest.MockedFunction<typeof useCartStore>;
@@ -86,12 +102,12 @@ describe('CartSidebar', () => {
 
   // Helper to setup Zustand store mock with selector pattern
   const setupMockStore = (
-    items: any[] = [],
+    items: CartItem[] = [],
     isSidebarOpen = false,
     totalItems = 0,
     totalPrice = 0
   ) => {
-    mockUseCartStore.mockImplementation((selector: any) => {
+    mockUseCartStore.mockImplementation((selector: (state: CartStore) => unknown) => {
       const state = {
         items,
         isSidebarOpen,
