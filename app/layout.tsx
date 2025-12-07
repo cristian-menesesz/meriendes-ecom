@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
 import { ThemeProvider } from '@/lib/providers/ThemeProvider';
+import { CartSidebar } from '@/components/cart';
 import './globals.css';
 
 const geistSans = Geist({
@@ -31,6 +32,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <QueryProvider>
             {children}
+            <CartSidebar />
             <Toaster position="top-center" richColors />
           </QueryProvider>
         </ThemeProvider>

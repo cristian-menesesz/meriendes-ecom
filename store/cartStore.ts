@@ -2,14 +2,27 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CartItem, Product, ProductVariant } from '@/types';
 
-interface CartStore {
+export interface CartStore {
   items: CartItem[];
+  isSidebarOpen: boolean;
+
+  // Cart operations
   addItem: (product: Product, variant: ProductVariant, quantity?: number) => void;
   removeItem: (variantId: string) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
+  incrementQuantity: (variantId: string) => void;
+  decrementQuantity: (variantId: string) => void;
   clearCart: () => void;
+
+  // Getters
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  getItemByVariantId: (variantId: string) => CartItem | undefined;
+
+  // Sidebar UI state
+  openSidebar: () => void;
+  closeSidebar: () => void;
+  toggleSidebar: () => void;
 }
 
 /**
@@ -22,6 +35,7 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      isSidebarOpen: false,
 
       addItem: (product, variant, quantity = 1) => {
         set((state) => {
@@ -62,6 +76,29 @@ export const useCartStore = create<CartStore>()(
         }));
       },
 
+      incrementQuantity: (variantId) => {
+        set((state) => ({
+          items: state.items.map((item) =>
+            item.variant.id === variantId ? { ...item, quantity: item.quantity + 1 } : item
+          ),
+        }));
+      },
+
+      decrementQuantity: (variantId) => {
+        const item = get().items.find((item) => item.variant.id === variantId);
+        if (!item) return;
+
+        if (item.quantity <= 1) {
+          get().removeItem(variantId);
+        } else {
+          set((state) => ({
+            items: state.items.map((item) =>
+              item.variant.id === variantId ? { ...item, quantity: item.quantity - 1 } : item
+            ),
+          }));
+        }
+      },
+
       clearCart: () => {
         set({ items: [] });
       },
@@ -75,11 +112,27 @@ export const useCartStore = create<CartStore>()(
           return total + item.variant.price * item.quantity;
         }, 0);
       },
+
+      getItemByVariantId: (variantId) => {
+        return get().items.find((item) => item.variant.id === variantId);
+      },
+
+      openSidebar: () => {
+        set({ isSidebarOpen: true });
+      },
+
+      closeSidebar: () => {
+        set({ isSidebarOpen: false });
+      },
+
+      toggleSidebar: () => {
+        set((state) => ({ isSidebarOpen: !state.isSidebarOpen }));
+      },
     }),
     {
-      name: 'cart-storage',
-      // Persist to localStorage
-      skipHydration: false,
+      name: 'meriendes-cart',
+      // Only persist cart items, not UI state
+      partialize: (state) => ({ items: state.items }),
     }
   )
 );
