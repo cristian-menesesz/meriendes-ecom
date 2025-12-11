@@ -1,0 +1,27 @@
+# ============================================
+# Docker Compose Override - Desarrollo Local
+# Este archivo se aplica automáticamente sobre docker-compose.yml
+# ============================================
+
+version: '3.9'
+
+services:
+  app:
+    # Hot-reload para desarrollo
+    build:
+      target: builder
+    command: npm run dev
+    volumes:
+      # Montar código fuente para hot-reload
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+    # Habilitar modo watch de Next.js
+    stdin_open: true
+    tty: true
+
+  db:
+    # Logging verboso en desarrollo
+    command: postgres -c log_statement=all -c log_destination=stderr
