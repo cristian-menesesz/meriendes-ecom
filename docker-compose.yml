@@ -1,0 +1,116 @@
+# ============================================
+# Docker Compose - Meriendes E-commerce
+# Orquestación de servicios para desarrollo local
+# ============================================
+
+version: '3.9'
+
+services:
+  # ==========================================
+  # Next.js Application
+  # ==========================================
+  app:
+    container_name: meriendes-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - '3000:3000'
+    environment:
+      # Variables públicas (embebidas en build)
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+
+      # Variables privadas (solo server-side)
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+
+      # Database connection (dev local)
+      - DATABASE_URL=postgresql://meriendes:changeme@db:5432/meriendes_ecom
+
+      # Node environment
+      - NODE_ENV=production
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - meriendes-network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==========================================
+  # PostgreSQL Database (Desarrollo Local)
+  # ==========================================
+  db:
+    container_name: meriendes-db
+    image: postgres:16-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=meriendes
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=meriendes_ecom
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=en_US.utf8 --lc-ctype=en_US.utf8
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docs/database-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./docs/rls-policies.sql:/docker-entrypoint-initdb.d/02-rls-policies.sql:ro
+      - ./docs/inventory-functions.sql:/docker-entrypoint-initdb.d/03-functions.sql:ro
+      - ./docs/seed-dev-data.sql:/docker-entrypoint-initdb.d/04-seed.sql:ro
+    networks:
+      - meriendes-network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U meriendes -d meriendes_ecom']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # Redis Cache (Opcional - Descomentado cuando se necesite)
+  # ==========================================
+  # cache:
+  #   container_name: meriendes-cache
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   networks:
+  #     - meriendes-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  meriendes-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ==========================================
+# Volumes (Persistencia de Datos)
+# ==========================================
+volumes:
+  postgres-data:
+    driver: local
+  # redis-data:
+  #   driver: local
