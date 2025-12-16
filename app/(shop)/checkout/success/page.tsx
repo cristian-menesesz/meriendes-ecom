@@ -91,7 +91,7 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const typedOrder = order as unknown as OrderWithItems;
 
   // Format order number for display
-  const orderNumber = typedOrder.order_number;
+  const orderNumber = typedOrder.orderNumber;
   const estimatedDeliveryDate = new Date();
   estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + 5); // 5 business days
 
@@ -137,9 +137,9 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
           <div className="space-y-4">
             {typedOrder.order_items?.map((item) => (
               <div key={item.id} className="flex gap-4">
-                {item.product_variants?.products?.image_url && (
+                {item.product_variants?.products?.imageUrl && (
                   <Image
-                    src={item.product_variants.products.image_url}
+                    src={item.product_variants.products.imageUrl}
                     alt={item.product_variants.products.name || 'Product'}
                     width={80}
                     height={80}
@@ -152,11 +152,11 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
                   </h4>
                   <p className="text-sm text-gray-500">SKU: {item.product_variants?.sku}</p>
                   <p className="text-sm text-gray-600">
-                    Quantity: {item.quantity} × {formatCurrency(item.unit_price)}
+                    Quantity: {item.quantity} × {formatCurrency(item.unitPrice)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-900">{formatCurrency(item.line_total)}</p>
+                  <p className="font-semibold text-gray-900">{formatCurrency(item.lineTotal)}</p>
                 </div>
               </div>
             ))}
@@ -164,23 +164,20 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
         </div>
 
         {/* Delivery Address */}
-        {typedOrder.delivery_street_address_1 && (
+        {typedOrder.deliveryStreetAddress1 && (
           <div className="mt-6 border-t border-gray-200 pt-6">
             <h3 className="mb-2 text-lg font-semibold text-gray-900">Delivery Address</h3>
             <div className="text-gray-700">
               <p>
-                {typedOrder.customer_first_name} {typedOrder.customer_last_name}
+                {typedOrder.customerFirstName} {typedOrder.customerLastName}
               </p>
-              <p>{typedOrder.delivery_street_address_1}</p>
-              {typedOrder.delivery_street_address_2 && (
-                <p>{typedOrder.delivery_street_address_2}</p>
-              )}
+              <p>{typedOrder.deliveryStreetAddress1}</p>
+              {typedOrder.deliveryStreetAddress2 && <p>{typedOrder.deliveryStreetAddress2}</p>}
               <p>
-                {typedOrder.delivery_city}, {typedOrder.delivery_state}{' '}
-                {typedOrder.delivery_zip_code}
+                {typedOrder.deliveryCity}, {typedOrder.deliveryState} {typedOrder.deliveryZipCode}
               </p>
-              {typedOrder.customer_phone && (
-                <p className="mt-2">Phone: {typedOrder.customer_phone}</p>
+              {typedOrder.customerPhone && (
+                <p className="mt-2">Phone: {typedOrder.customerPhone}</p>
               )}
             </div>
           </div>
@@ -196,12 +193,12 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
             </div>
             <div className="flex justify-between text-gray-700">
               <span>Tax</span>
-              <span>{formatCurrency(typedOrder.tax_amount)}</span>
+              <span>{formatCurrency(typedOrder.taxAmount)}</span>
             </div>
             <div className="flex justify-between text-gray-700">
               <span>Delivery Fee</span>
               <span>
-                {typedOrder.delivery_fee > 0 ? formatCurrency(typedOrder.delivery_fee) : 'FREE'}
+                {typedOrder.deliveryFee > 0 ? formatCurrency(typedOrder.deliveryFee) : 'FREE'}
               </span>
             </div>
             <div className="flex justify-between border-t border-gray-200 pt-2 text-lg font-semibold text-gray-900">
@@ -231,7 +228,7 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
             </svg>
             <span>
               You&apos;ll receive a confirmation email at{' '}
-              <strong>{typedOrder.customer_email}</strong>
+              <strong>{typedOrder.customerEmail}</strong>
             </span>
           </li>
           <li className="flex items-start gap-2">
