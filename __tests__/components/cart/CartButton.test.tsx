@@ -5,10 +5,16 @@ import { useCartStore, type CartStore } from '@/store/cartStore';
 
 // Mock Zustand store
 jest.mock('@/store/cartStore', () => ({
-  useCartStore: jest.fn(),
+  useCartStore: Object.assign(jest.fn(), {
+    subscribe: jest.fn(() => jest.fn()),
+    getState: jest.fn(),
+  }),
 }));
 
-const mockUseCartStore = useCartStore as jest.MockedFunction<typeof useCartStore>;
+const mockUseCartStore = useCartStore as jest.MockedFunction<typeof useCartStore> & {
+  subscribe: jest.MockedFunction<(callback: (state: CartStore) => void) => () => void>;
+  getState: jest.MockedFunction<() => CartStore>;
+};
 
 describe('CartButton', () => {
   const mockOpenSidebar = jest.fn();
@@ -33,6 +39,11 @@ describe('CartButton', () => {
         toggleSidebar: jest.fn(),
       };
       return selector(state);
+    });
+
+    // Mock subscribe method
+    mockUseCartStore.subscribe.mockImplementation(() => {
+      return jest.fn(); // Return unsubscribe function
     });
   };
 

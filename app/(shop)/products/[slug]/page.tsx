@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getProductBySlug, getActiveProducts } from '@/lib/supabase/queries/products';
+import { getProductBySlug, getActiveProductsForBuild } from '@/lib/supabase/queries/products';
 import { ProductDetail } from '@/components/products/ProductDetail';
 import { LoadingSpinner } from '@/components/ui';
 
@@ -19,13 +19,20 @@ interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
-// Enable ISR with 1 hour revalidation
-export const revalidate = 3600;
+// Force dynamic rendering since static generation requires env vars
+// which may not be available during CI builds
+export const dynamic = 'force-dynamic';
 
 // Generate static paths at build time for active products
 export async function generateStaticParams() {
+  // Skip static generation during build if env vars not available
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return [];
+  }
+
   try {
-    const products = await getActiveProducts();
+    // Use build-safe version that doesn't require cookies
+    const products = await getActiveProductsForBuild();
     return products.map((product) => ({
       slug: product.slug,
     }));

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import type { Product, ProductVariant, ProductCategory, Inventory } from '@/types';
 
 /**
@@ -21,6 +21,55 @@ export interface ProductWithDetails extends Product {
  */
 export async function getActiveProducts(): Promise<ProductWithDetails[]> {
   const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('products')
+    .select(
+      `
+      *,
+      category:product_categories(*),
+      variants:product_variants(
+        *,
+        inventory(*)
+      )
+    `
+    )
+    .eq('is_active', true)
+    .order('display_order', { ascending: true })
+    .order('name', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to fetch products: ${error.message}`);
+  }
+
+  // Map snake_case from Supabase to our camelCase types
+  const mapped: ProductWithDetails[] = (data || []).map((p) => mapProductRow(p));
+
+  // Filter products that have at least one active variant (after mapping)
+  const productsWithActiveVariants = mapped.filter((product) =>
+    product.variants?.some((v) => v.isActive)
+  );
+
+  return productsWithActiveVariants;
+}
+
+/**
+ * Fetches active products for build-time static generation.
+ * Uses service client to avoid cookies() call during build.
+ * Should ONLY be used in generateStaticParams.
+ *
+ * @returns {Promise<ProductWithDetails[]>} Array of products with variants and inventory.
+ * @throws {Error} If the Supabase query fails.
+ */
+export async function getActiveProductsForBuild(): Promise<ProductWithDetails[]> {
+  // During build time, env vars might not be available
+  // Return empty array to allow build to continue without static generation
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    console.warn('⚠️ Supabase credentials not available during build. Skipping static generation.');
+    return [];
+  }
+
+  const supabase = createServiceClient();
 
   const { data, error } = await supabase
     .from('products')
