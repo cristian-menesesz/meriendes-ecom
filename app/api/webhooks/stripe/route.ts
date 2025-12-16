@@ -3,6 +3,9 @@ import { stripe } from '@/lib/stripe/server';
 import { createServiceClient } from '@/lib/supabase/server';
 import type Stripe from 'stripe';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 /**
  * Stripe Webhook Handler
  * Processes checkout.session.completed events for order fulfillment.

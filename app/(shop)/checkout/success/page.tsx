@@ -9,6 +9,9 @@ import { ClearCartOnSuccess } from './ClearCartOnSuccess';
 import { PrintOrderButton } from './PrintOrderButton';
 import type { OrderWithItems } from '@/types/queries';
 
+// Force dynamic rendering since we need to verify session_id from query params
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Order Confirmed',
   robots: 'noindex', // Don't index success pages

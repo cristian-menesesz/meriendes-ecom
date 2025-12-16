@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import type { Product, ProductVariant, ProductCategory, Inventory } from '@/types';
 
 /**
@@ -21,6 +21,48 @@ export interface ProductWithDetails extends Product {
  */
 export async function getActiveProducts(): Promise<ProductWithDetails[]> {
   const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('products')
+    .select(
+      `
+      *,
+      category:product_categories(*),
+      variants:product_variants(
+        *,
+        inventory(*)
+      )
+    `
+    )
+    .eq('is_active', true)
+    .order('display_order', { ascending: true })
+    .order('name', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to fetch products: ${error.message}`);
+  }
+
+  // Map snake_case from Supabase to our camelCase types
+  const mapped: ProductWithDetails[] = (data || []).map((p) => mapProductRow(p));
+
+  // Filter products that have at least one active variant (after mapping)
+  const productsWithActiveVariants = mapped.filter((product) =>
+    product.variants?.some((v) => v.isActive)
+  );
+
+  return productsWithActiveVariants;
+}
+
+/**
+ * Fetches active products for build-time static generation.
+ * Uses service client to avoid cookies() call during build.
+ * Should ONLY be used in generateStaticParams.
+ *
+ * @returns {Promise<ProductWithDetails[]>} Array of products with variants and inventory.
+ * @throws {Error} If the Supabase query fails.
+ */
+export async function getActiveProductsForBuild(): Promise<ProductWithDetails[]> {
+  const supabase = createServiceClient();
 
   const { data, error } = await supabase
     .from('products')
