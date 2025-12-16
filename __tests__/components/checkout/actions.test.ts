@@ -4,13 +4,14 @@
 import { createCheckoutSession } from '../../../app/(shop)/checkout/actions';
 import { createClient } from '@/lib/supabase/server';
 import { stripe } from '@/lib/stripe/server';
+import type { Product, ProductVariant } from '@/types';
 
 // Mock dependencies
 jest.mock('@/lib/supabase/server');
 jest.mock('@/lib/stripe/server');
 
 // Helper to create complete mock product
-const createMockProduct = (id: string, name: string = 'Product 1'): any => ({
+const createMockProduct = (id: string, name: string = 'Product 1'): Product => ({
   id,
   categoryId: 1,
   name,
@@ -27,7 +28,11 @@ const createMockProduct = (id: string, name: string = 'Product 1'): any => ({
 });
 
 // Helper to create complete mock variant
-const createMockVariant = (id: string, productId: string, price: number = 15.99): any => ({
+const createMockVariant = (
+  id: string,
+  productId: string,
+  price: number = 15.99
+): ProductVariant => ({
   id,
   productId,
   sku: 'SKU-' + id.slice(0, 8),
@@ -59,7 +64,8 @@ describe('createCheckoutSession Server Action', () => {
 
     // Setup default mocks
     (createClient as jest.Mock).mockResolvedValue(mockSupabaseClient);
-    (stripe as any).checkout = { sessions: mockStripeCheckoutSessions };
+    (stripe as unknown as { checkout: { sessions: typeof mockStripeCheckoutSessions } }).checkout =
+      { sessions: mockStripeCheckoutSessions };
   });
 
   describe('Validation', () => {
@@ -102,8 +108,17 @@ describe('createCheckoutSession Server Action', () => {
         },
         cartItems: [
           {
-            product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-            variant: { id: 'v1', price: 15.99, sku: 'SKU1' } as any,
+            product: {
+              id: '1',
+              name: 'Product 1',
+              slug: 'product-1',
+              isActive: true,
+            } as Partial<Product> as Product,
+            variant: {
+              id: 'v1',
+              price: 15.99,
+              sku: 'SKU1',
+            } as Partial<ProductVariant> as ProductVariant,
             quantity: 1,
           },
         ],
@@ -131,8 +146,17 @@ describe('createCheckoutSession Server Action', () => {
         },
         cartItems: [
           {
-            product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-            variant: { id: 'v1', price: 15.99, sku: 'SKU1' } as any,
+            product: {
+              id: '1',
+              name: 'Product 1',
+              slug: 'product-1',
+              isActive: true,
+            } as Partial<Product> as Product,
+            variant: {
+              id: 'v1',
+              price: 15.99,
+              sku: 'SKU1',
+            } as Partial<ProductVariant> as ProductVariant,
             quantity: 1,
           },
         ],
@@ -505,26 +529,16 @@ describe('createCheckoutSession Server Action', () => {
     it('should calculate totals correctly for tax-exempt state', async () => {
       // This test verifies the calculation logic
       // Actual implementation would need full mocking of successful flow
-
-      const subtotal = 30;
-      const state = 'OR'; // Tax-exempt
-
-      // Expected: subtotal=30, tax=0, deliveryFee=5.99, total=35.99
-
+      // Expected for OR state: subtotal=30, tax=0, deliveryFee=5.99, total=35.99
       // Note: Full integration test would mock all database calls
       // and verify Stripe session creation with correct amounts
     });
 
     it('should calculate totals correctly for taxable state', async () => {
-      const subtotal = 30;
-      const state = 'CA'; // Taxable at 8.5%
-
-      // Expected: subtotal=30, tax=2.55, deliveryFee=5.99, total=38.54
+      // Expected for CA state: subtotal=30, tax=2.55, deliveryFee=5.99, total=38.54
     });
 
     it('should apply free delivery for orders over $50', async () => {
-      const subtotal = 100;
-
       // Expected: deliveryFee=0
     });
   });
@@ -558,8 +572,17 @@ describe('createCheckoutSession Server Action', () => {
         },
         cartItems: [
           {
-            product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-            variant: { id: 'v1', price: 15.99, sku: 'SKU1' } as any,
+            product: {
+              id: '1',
+              name: 'Product 1',
+              slug: 'product-1',
+              isActive: true,
+            } as Partial<Product> as Product,
+            variant: {
+              id: 'v1',
+              price: 15.99,
+              sku: 'SKU1',
+            } as Partial<ProductVariant> as ProductVariant,
             quantity: 1,
           },
         ],

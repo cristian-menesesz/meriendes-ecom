@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useCartStore } from '@/store/cartStore';
 import { createCheckoutSession } from './actions';
 import { checkoutFormSchema } from '@/lib/validations/schemas';
@@ -358,9 +359,11 @@ export default function CheckoutPage() {
                 <div key={item.variant.id} className="flex gap-3">
                   <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border border-gray-200">
                     {item.product.imageUrl && (
-                      <img
+                      <Image
                         src={item.product.imageUrl}
                         alt={item.product.name}
+                        width={64}
+                        height={64}
                         className="h-full w-full object-cover"
                       />
                     )}

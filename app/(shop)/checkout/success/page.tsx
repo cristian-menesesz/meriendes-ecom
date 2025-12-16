@@ -1,5 +1,6 @@
 import { Metadata } from 'next/types';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { createServiceClient } from '@/lib/supabase/server';
 import { stripe } from '@/lib/stripe/server';
@@ -137,9 +138,11 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
             {typedOrder.order_items?.map((item) => (
               <div key={item.id} className="flex gap-4">
                 {item.product_variants?.products?.image_url && (
-                  <img
+                  <Image
                     src={item.product_variants.products.image_url}
                     alt={item.product_variants.products.name || 'Product'}
+                    width={80}
+                    height={80}
                     className="h-20 w-20 rounded-lg object-cover"
                   />
                 )}

@@ -9,7 +9,6 @@ import {
   calculateOrderTotal,
   validateCheckoutCart,
 } from '@/lib/utils/checkout';
-import type { CartItem } from '@/types';
 
 /**
  * Server Action return type for checkout session creation.

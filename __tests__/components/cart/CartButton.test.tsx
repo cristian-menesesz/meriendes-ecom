@@ -4,19 +4,16 @@ import { CartButton } from '@/components/cart/CartButton';
 import { useCartStore, type CartStore } from '@/store/cartStore';
 
 // Mock Zustand store
-jest.mock('@/store/cartStore', () => {
-  const actualStore = jest.requireActual('@/store/cartStore');
-  return {
-    useCartStore: Object.assign(jest.fn(), {
-      subscribe: jest.fn(() => jest.fn()),
-      getState: jest.fn(),
-    }),
-  };
-});
+jest.mock('@/store/cartStore', () => ({
+  useCartStore: Object.assign(jest.fn(), {
+    subscribe: jest.fn(() => jest.fn()),
+    getState: jest.fn(),
+  }),
+}));
 
 const mockUseCartStore = useCartStore as jest.MockedFunction<typeof useCartStore> & {
-  subscribe: jest.MockedFunction<any>;
-  getState: jest.MockedFunction<any>;
+  subscribe: jest.MockedFunction<(callback: (state: CartStore) => void) => () => void>;
+  getState: jest.MockedFunction<() => CartStore>;
 };
 
 describe('CartButton', () => {
@@ -45,7 +42,7 @@ describe('CartButton', () => {
     });
 
     // Mock subscribe method
-    mockUseCartStore.subscribe.mockImplementation((callback: any) => {
+    mockUseCartStore.subscribe.mockImplementation(() => {
       return jest.fn(); // Return unsubscribe function
     });
   };

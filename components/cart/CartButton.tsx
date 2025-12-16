@@ -1,7 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
+
+// Use useLayoutEffect on client, useEffect on server
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 /**
  * Cart button component for header navigation.
@@ -24,18 +27,20 @@ export function CartButton() {
   const [mounted, setMounted] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
 
-  useEffect(() => {
+  // Use layout effect to synchronously update before paint
+  useIsomorphicLayoutEffect(() => {
     setMounted(true);
-    // Update total items after mount and subscribe to changes
     setTotalItems(getTotalItems());
+  }, [getTotalItems]);
 
+  useEffect(() => {
     // Subscribe to store changes
     const unsubscribe = useCartStore.subscribe((state) => {
       setTotalItems(state.items.reduce((total, item) => total + item.quantity, 0));
     });
 
     return unsubscribe;
-  }, [getTotalItems]);
+  }, []);
 
   return (
     <button

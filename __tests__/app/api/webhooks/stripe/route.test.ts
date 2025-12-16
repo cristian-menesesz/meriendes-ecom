@@ -25,7 +25,7 @@ describe('Stripe Webhook Handler', () => {
 
     // Setup default mocks - use createServiceClient which is what the webhook uses
     (createServiceClient as jest.Mock).mockReturnValue(mockSupabaseClient);
-    (stripe as any).webhooks = mockStripeWebhooks;
+    (stripe as unknown as { webhooks: typeof mockStripeWebhooks }).webhooks = mockStripeWebhooks;
 
     // Mock environment variable
     process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_secret';

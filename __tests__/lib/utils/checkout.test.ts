@@ -8,6 +8,7 @@ import {
   calculateOrderTotal,
   validateCheckoutCart,
 } from '@/lib/utils/checkout';
+import type { Product, ProductVariant } from '@/types';
 
 describe('Checkout Utilities', () => {
   describe('generateOrderNumber', () => {
@@ -123,7 +124,6 @@ describe('Checkout Utilities', () => {
 
   describe('calculateDeliveryFee', () => {
     const DELIVERY_FEE = 5.99;
-    const FREE_DELIVERY_THRESHOLD = 50;
 
     it('should charge delivery fee for subtotal under threshold', () => {
       const fee = calculateDeliveryFee(49.99);
@@ -259,8 +259,17 @@ describe('Checkout Utilities', () => {
     it('should return valid for non-empty cart above minimum', () => {
       const items = [
         {
-          product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-          variant: { id: 'v1', price: 15.99, sku: 'SKU1' } as any,
+          product: {
+            id: '1',
+            name: 'Product 1',
+            slug: 'product-1',
+            isActive: true,
+          } as Partial<Product> as Product,
+          variant: {
+            id: 'v1',
+            price: 15.99,
+            sku: 'SKU1',
+          } as Partial<ProductVariant> as ProductVariant,
           quantity: 1,
         },
       ];
@@ -281,8 +290,17 @@ describe('Checkout Utilities', () => {
     it('should return error for cart below minimum order amount', () => {
       const items = [
         {
-          product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-          variant: { id: 'v1', price: 5.0, sku: 'SKU1' } as any,
+          product: {
+            id: '1',
+            name: 'Product 1',
+            slug: 'product-1',
+            isActive: true,
+          } as Partial<Product> as Product,
+          variant: {
+            id: 'v1',
+            price: 5.0,
+            sku: 'SKU1',
+          } as Partial<ProductVariant> as ProductVariant,
           quantity: 1,
         },
       ];
@@ -296,8 +314,17 @@ describe('Checkout Utilities', () => {
     it('should return valid for cart at exactly minimum order amount', () => {
       const items = [
         {
-          product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-          variant: { id: 'v1', price: 10.0, sku: 'SKU1' } as any,
+          product: {
+            id: '1',
+            name: 'Product 1',
+            slug: 'product-1',
+            isActive: true,
+          } as Partial<Product> as Product,
+          variant: {
+            id: 'v1',
+            price: 10.0,
+            sku: 'SKU1',
+          } as Partial<ProductVariant> as ProductVariant,
           quantity: 1,
         },
       ];
@@ -311,13 +338,31 @@ describe('Checkout Utilities', () => {
     it('should calculate subtotal correctly for multiple items', () => {
       const items = [
         {
-          product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-          variant: { id: 'v1', price: 5.99, sku: 'SKU1' } as any,
+          product: {
+            id: '1',
+            name: 'Product 1',
+            slug: 'product-1',
+            isActive: true,
+          } as Partial<Product> as Product,
+          variant: {
+            id: 'v1',
+            price: 5.99,
+            sku: 'SKU1',
+          } as Partial<ProductVariant> as ProductVariant,
           quantity: 2,
         },
         {
-          product: { id: '2', name: 'Product 2', slug: 'product-2', isActive: true } as any,
-          variant: { id: 'v2', price: 3.5, sku: 'SKU2' } as any,
+          product: {
+            id: '2',
+            name: 'Product 2',
+            slug: 'product-2',
+            isActive: true,
+          } as Partial<Product> as Product,
+          variant: {
+            id: 'v2',
+            price: 3.5,
+            sku: 'SKU2',
+          } as Partial<ProductVariant> as ProductVariant,
           quantity: 1,
         },
       ];
@@ -332,13 +377,31 @@ describe('Checkout Utilities', () => {
     it('should handle cart with multiple items totaling below minimum', () => {
       const items = [
         {
-          product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-          variant: { id: 'v1', price: 3.0, sku: 'SKU1' } as any,
+          product: {
+            id: '1',
+            name: 'Product 1',
+            slug: 'product-1',
+            isActive: true,
+          } as Partial<Product> as Product,
+          variant: {
+            id: 'v1',
+            price: 3.0,
+            sku: 'SKU1',
+          } as Partial<ProductVariant> as ProductVariant,
           quantity: 2,
         },
         {
-          product: { id: '2', name: 'Product 2', slug: 'product-2', isActive: true } as any,
-          variant: { id: 'v2', price: 2.0, sku: 'SKU2' } as any,
+          product: {
+            id: '2',
+            name: 'Product 2',
+            slug: 'product-2',
+            isActive: true,
+          } as Partial<Product> as Product,
+          variant: {
+            id: 'v2',
+            price: 2.0,
+            sku: 'SKU2',
+          } as Partial<ProductVariant> as ProductVariant,
           quantity: 1,
         },
       ];
@@ -353,8 +416,17 @@ describe('Checkout Utilities', () => {
     it('should handle large cart totals', () => {
       const items = [
         {
-          product: { id: '1', name: 'Product 1', slug: 'product-1', isActive: true } as any,
-          variant: { id: 'v1', price: 99.99, sku: 'SKU1' } as any,
+          product: {
+            id: '1',
+            name: 'Product 1',
+            slug: 'product-1',
+            isActive: true,
+          } as Partial<Product> as Product,
+          variant: {
+            id: 'v1',
+            price: 99.99,
+            sku: 'SKU1',
+          } as Partial<ProductVariant> as ProductVariant,
           quantity: 10,
         },
       ];
