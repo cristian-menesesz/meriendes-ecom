@@ -62,6 +62,13 @@ export async function getActiveProducts(): Promise<ProductWithDetails[]> {
  * @throws {Error} If the Supabase query fails.
  */
 export async function getActiveProductsForBuild(): Promise<ProductWithDetails[]> {
+  // During build time, env vars might not be available
+  // Return empty array to allow build to continue without static generation
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    console.warn('⚠️ Supabase credentials not available during build. Skipping static generation.');
+    return [];
+  }
+
   const supabase = createServiceClient();
 
   const { data, error } = await supabase
